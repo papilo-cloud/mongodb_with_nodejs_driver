@@ -1,20 +1,22 @@
 const { MongoClient } = require("mongodb");
 const uri = require('./uri')
-const client = new MongoClient(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+const client = new MongoClient(uri)
+const dbName = 'bank'
 
+const connectToDatabase = async () => {
+    try{
+        await client.connect()
+        console.log(`connected to the ${dbName} database`)
+    } catch(error){
+        console.error(error)
+    }
+}
 async function main() {
     try {
-        await client.connect()
-        console.log('Connected to MongoDB')
-
-        const database = client.db('')
-        const collection = database.collection('')
-        const result = await collection.aggregate()
+        await connectToDatabase()
+        const databaseList = await client.db().admin().listDatabases()
+        databaseList.databases.forEach(db => console.log(`- ${db.name}`))
         
-        console.log(result)
     } catch(error) {
         console.error(error)
     } finally {
